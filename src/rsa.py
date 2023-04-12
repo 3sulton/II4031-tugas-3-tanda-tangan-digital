@@ -1,5 +1,6 @@
 from random import randrange, getrandbits
 from math import gcd as bltin_gcd
+import gmpy2
 
 def is_prime(n):
     # big prime numbers are hard to find
@@ -43,6 +44,24 @@ def generate_prime():
 
 def is_coprime(a, b):
     return bltin_gcd(a, b) == 1
+
+def rsa_sign(hash, n, key):
+    pt = (hash**key) % n
+    result = hex(pt)[2:]
+    return result
+
+#masukin hasil hash konten, trs di cek sm digital sign
+def rsa_verify(ds, hash, n, key):
+    ct = gmpy2.mpz(int(ds, 16))
+    result = pow(ct, key, n)
+    return result == hash
+
+def signing(ds):
+    return '''
+    *** Begin of digital signature ***\n
+    %s\n
+    *** End of digital signature ***
+    ''' % ds
 
 class rsa:
     def __init__(self):
