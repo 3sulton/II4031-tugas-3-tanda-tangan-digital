@@ -139,7 +139,7 @@ def App(screen=None):
             return
 
         r = rsa.rsa()
-        e, d, n = r.get_key()
+        e, d, n = r.get_key(key_len)
 
         output_e.delete("1.0", tk.END)
         output_e.insert("1.0", e)
@@ -452,6 +452,25 @@ def App(screen=None):
         image=image_private_key_sign
     )
 
+    def choose_private_key():
+        private_key_path = filedialog.askopenfilename(initialdir = Path(__file__),
+                                                      defaultextension='.prikey',
+                                                      filetypes=[('Custom Files', '*.prikey'), ('All Files', '*.*')],
+                                                      title='Load Private Key')
+        if private_key_path == "":
+            return
+        ext = private_key_path.split(".")[-1]
+        if ext != "prikey":
+            tk.messagebox.showwarning(title=gui_title, message="Pilih file dengan ekstensi .prikey")
+            return
+        
+        with open(private_key_path, "r") as file:
+            content = file.read()
+        
+        input_private_key.delete("1.0", tk.END)
+        input_private_key.insert("1.0", content)
+        
+
     # choose file button - private key
     button_choose_file_private = PhotoImage(
         file=relative_to_assets("choose_file.png"))
@@ -459,7 +478,7 @@ def App(screen=None):
         image=button_choose_file_private,
         borderwidth=0,
         highlightthickness=0,
-        command=lambda: print("button_choose_file_private clicked"),
+        command=choose_private_key,
         relief="flat"
     )
     choose_file_private.place(
@@ -639,6 +658,24 @@ def App(screen=None):
         image=image_public_key_verify
     )
 
+    def choose_public_key():
+        public_key_path = filedialog.askopenfilename(initialdir = Path(__file__),
+                                                      defaultextension='.pubkey',
+                                                      filetypes=[('Custom Files', '*.pubkey'), ('All Files', '*.*')],
+                                                      title='Load Public Key')
+        if public_key_path == "":
+            return
+        ext = public_key_path.split(".")[-1]
+        if ext != "pubkey":
+            tk.messagebox.showwarning(title=gui_title, message="Pilih file dengan ekstensi .prikey")
+            return
+        
+        with open(public_key_path, "r") as file:
+            content = file.read()
+        
+        input_public_key.delete("1.0", tk.END)
+        input_public_key.insert("1.0", content)
+
     # choose file button - public key
     button_choose_file_public = PhotoImage(
         file=relative_to_assets("choose_file.png"))
@@ -646,7 +683,7 @@ def App(screen=None):
         image=button_choose_file_public,
         borderwidth=0,
         highlightthickness=0,
-        command=lambda: print("button_choose_file_public clicked"),
+        command=choose_public_key,
         relief="flat"
     )
     choose_file_public.place(

@@ -40,8 +40,7 @@ def is_prime(n):
                 return False
     return True
 
-def generate_prime():
-    length = 1024
+def generate_prime(length):
     while(True):
         # generate random number
         p = getrandbits(length)
@@ -75,12 +74,11 @@ class rsa:
     def __init__(self) -> None:
         pass
 
-    def get_key(self):
-        self.key_generator()
+    def get_key(self, length):
+        self.key_generator(length)
         return self.e, self.d, self.n
 
-    def generate_e(self):
-        length = 1024
+    def generate_e(self, length):
         while(True):
             # generate random number
             e = getrandbits(length)
@@ -99,19 +97,19 @@ class rsa:
             (r_old, r_new) = (r_new, r_old - a * r_new)
         return d_old % self.phi if r_old == 1 else None
 
-    def key_generator(self):
-        p = generate_prime()
-        q = generate_prime()
+    def key_generator(self, length):
+        p = generate_prime(length)
+        q = generate_prime(length)
         self.n = p * q
         self.phi = (p - 1) * (q - 1)
-        self.e = self.generate_e()
+        self.e = self.generate_e(length)
         self.d = self.generate_d()
         assert((self.e * self.d) % self.phi == 1 )
         return
 
 if __name__ == "__main__":
     r = rsa()
-    e, d, n = r.get_key()
+    e, d, n = r.get_key(512)
     # print(e)
     # print(d)
     # print(n)
