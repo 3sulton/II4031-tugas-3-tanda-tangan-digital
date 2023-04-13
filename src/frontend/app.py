@@ -154,9 +154,6 @@ def App(screen=None):
         output_private_key.delete("1.0", tk.END)
         output_private_key.insert("1.0", str(d) + "," + str(n))
 
-        
-
-
     # Generate Key Button
     button_generate_key = PhotoImage(
         file=relative_to_assets("button_generate_key.png"))
@@ -324,13 +321,49 @@ def App(screen=None):
         height=28.0
     )
 
+    def save_key():
+        # format public key adalah e,n
+        # format private key adalah d,n
+        public_key = output_public_key.get('1.0', 'end').replace("\n", "")
+        private_key = output_private_key.get('1.0', 'end').replace("\n", "")
+        
+        if public_key == "" or private_key == "":
+            tk.messagebox.showwarning(title=gui_title, message="Generate key terlebih dahulu")
+            return
+        
+        public_file_path = filedialog.asksaveasfilename(
+            defaultextension='.pubkey',
+            filetypes=[('Custom Files', '*.pubkey'), ('All Files', '*.*')],
+            title='Save Public Key',
+            initialfile='my_public_key.pubkey'
+        )
+
+        if public_file_path == "":
+            return
+
+        private_file_path = filedialog.asksaveasfilename(
+            defaultextension='.prikey',
+            filetypes=[('Custom Files', '*.prikey'), ('All Files', '*.*')],
+            title='Save Private Key',
+            initialfile='my_private_key.prikey'
+        )
+
+        if private_file_path == "":
+            return
+        
+        with open(public_file_path, 'w') as file:
+            file.write(public_key)
+        with open(private_file_path, 'w') as file:
+            file.write(private_key)
+
+
     button_save_key = PhotoImage(
         file=relative_to_assets("button_save_key.png"))
     save_key = Button(
         image=button_save_key,
         borderwidth=0,
         highlightthickness=0,
-        command=lambda: print("button_save_key clicked"),
+        command=save_key,
         relief="flat"
     )
     save_key.place(
