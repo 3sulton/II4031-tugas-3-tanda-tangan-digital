@@ -1,6 +1,14 @@
 from random import randrange, getrandbits
 from math import gcd as bltin_gcd
 import gmpy2
+import hashlib
+
+# output nya udh dalam integer gede
+def hashing(plainText):
+    h = hashlib.new("sha3_512", plainText.encode())
+    result = h.hexdigest()
+    h_int = gmpy2.mpz(int(result, 16))
+    return h_int
 
 def is_prime(n):
     # big prime numbers are hard to find
@@ -104,10 +112,12 @@ class rsa:
 if __name__ == "__main__":
     r = rsa()
     e, d, n = r.get_key()
-    print(e)
-    print(d)
-    print(n)
+    # print(e)
+    # print(d)
+    # print(n)
     # nanti input hash nya diubah dulu ke int gede
-    print(rsa_sign(102, n, e))
-    result = rsa_sign(102, n, e)
-    print(rsa_verify(result, 102, n, d))
+    h = hashing("halo kawan")
+    result = rsa_sign(h, n, e)
+    print(result)
+    print(rsa_verify(result, h, n, d))
+    print(signing(result))
