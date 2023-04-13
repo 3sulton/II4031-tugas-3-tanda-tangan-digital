@@ -74,8 +74,18 @@ class rsa:
             e = getrandbits(length)
             # apply a mask to set MSB to 1
             e |= (1 << length - 1)
-            if is_coprime(e, 1):
+            if is_coprime(e, self.phi):
                 return e
+
+    def generate_d(self):
+        # using extended euclidean algorithm
+        d_old = 0; r_old = self.phi
+        d_new = 1; r_new = self.e
+        while r_new > 0:
+            a = r_old // r_new
+            (d_old, d_new) = (d_new, d_old - a * d_new)
+            (r_old, r_new) = (r_new, r_old - a * r_new)
+        return d_old % self.phi if r_old == 1 else None
 
     def key_generator(self):
         p = generate_prime()
@@ -83,8 +93,9 @@ class rsa:
         self.n = p * q
         self.phi = (p - 1) * (q - 1)
         self.e = self.generate_e()
-        print(len(str(self.e)))
-        print(self.e)
+        self.d = self.generate_d()
+        assert((self.e * self.d) % self.phi == 1 )
+        return
 
 
 rsa = rsa()
