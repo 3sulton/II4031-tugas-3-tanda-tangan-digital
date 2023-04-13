@@ -1,3 +1,9 @@
+import datetime
+import sys, os.path
+be_dir = (os.path.abspath(os.path.join(os.path.dirname(__file__), '..')) + '/backend/')
+sys.path.append(be_dir)
+import rsa
+
 from pathlib import Path
 
 # from tkinter import *
@@ -14,11 +20,14 @@ def relative_to_assets(path: str) -> Path:
 def App(screen=None):
     if (screen != None):
         screen.destroy()
-    global window
+    global window, gui_title
     window = Tk()
-    window.title("My Own Stream Cipher")
+    gui_title = "Digital Signature RSA & SHA-3"
+    window.title(gui_title)
     window.geometry("900x600")
     window.configure(bg = "#F8EFD3")
+    
+    global key_length
 
     canvas = Canvas(
         window,
@@ -70,7 +79,7 @@ def App(screen=None):
     )
 
     # radio button untuk panjang key
-    var = IntVar()
+    key_length = IntVar()
 
     # 512 bit
     image_512_bit = PhotoImage(
@@ -83,9 +92,9 @@ def App(screen=None):
 
     bit_512 = Radiobutton(
               window,
-              variable = var,
+              variable = key_length,
               bg = "#CEDFCC",
-              value = 1)
+              value = 512)
     
     bit_512.pack()
     bit_512.place(
@@ -104,15 +113,49 @@ def App(screen=None):
 
     bit_1024 = Radiobutton(
                window,
-               variable = var,
+               variable = key_length,
                bg = "#CEDFCC",
-               value = 2)
+               value = 1024)
     
     bit_1024.pack()
     bit_1024.place(
         x = 170.0,
         y = 150.0
     )
+
+    def loading():
+        output_e.delete("1.0", tk.END)
+        output_e.insert("1.0", "Loading...")
+        output_d.delete("1.0", tk.END)
+        output_d.insert("1.0", "Loading...")
+        output_n.delete("1.0", tk.END)
+        output_n.insert("1.0", "Loading...")
+
+    def key_generator():
+        key_len = key_length.get()
+
+        if key_len == 0:
+            tk.messagebox.showwarning(title=gui_title, message="Pilih panjang key terlebih dahulu")
+            return
+
+        r = rsa.rsa()
+        e, d, n = r.get_key()
+
+        output_e.delete("1.0", tk.END)
+        output_e.insert("1.0", e)
+        output_d.delete("1.0", tk.END)
+        output_d.insert("1.0", d)
+        output_n.delete("1.0", tk.END)
+        output_n.insert("1.0", n)
+
+        output_public_key.delete("1.0", tk.END)
+        output_public_key.insert("1.0", str(e) + "," + str(n))
+
+        output_private_key.delete("1.0", tk.END)
+        output_private_key.insert("1.0", str(d) + "," + str(n))
+
+        
+
 
     # Generate Key Button
     button_generate_key = PhotoImage(
@@ -121,7 +164,7 @@ def App(screen=None):
         image=button_generate_key,
         borderwidth=0,
         highlightthickness=0,
-        command=lambda: print("button_generate_key clicked"),
+        command=key_generator,
         relief="flat"
     )
     generate_key.place(
