@@ -326,7 +326,7 @@ def App(screen=None):
         # format private key adalah d,n
         public_key = output_public_key.get('1.0', 'end').replace("\n", "")
         private_key = output_private_key.get('1.0', 'end').replace("\n", "")
-        
+
         if public_key == "" or private_key == "":
             tk.messagebox.showwarning(title=gui_title, message="Generate key terlebih dahulu")
             return
@@ -355,6 +355,8 @@ def App(screen=None):
             file.write(public_key)
         with open(private_file_path, 'w') as file:
             file.write(private_key)
+
+        tk.messagebox.showinfo(title=gui_title, message="Key berhasil disimpan")
 
 
     button_save_key = PhotoImage(
