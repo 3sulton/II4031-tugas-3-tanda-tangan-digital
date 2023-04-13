@@ -46,7 +46,7 @@ def is_coprime(a, b):
     return bltin_gcd(a, b) == 1
 
 def rsa_sign(hash, n, key):
-    pt = (hash**key) % n
+    pt = pow(gmpy2.mpz(hash), key, n)
     result = hex(pt)[2:]
     return result
 
@@ -107,3 +107,7 @@ if __name__ == "__main__":
     print(e)
     print(d)
     print(n)
+    # nanti input hash nya diubah dulu ke int gede
+    print(rsa_sign(102, n, e))
+    result = rsa_sign(102, n, e)
+    print(rsa_verify(result, 102, n, d))
