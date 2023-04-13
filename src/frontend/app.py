@@ -18,16 +18,19 @@ def relative_to_assets(path: str) -> Path:
     return ASSETS_PATH / Path(path)
 
 def App(screen=None):
+    global window, gui_title
+    global key_length, var_sign, var_verify
+    global is_sign_file, message_sign_file_path
+    global is_verify_file, message_verify_file_path
+
     if (screen != None):
         screen.destroy()
-    global window, gui_title
     window = Tk()
     gui_title = "Digital Signature RSA & SHA-3"
     window.title(gui_title)
     window.geometry("900x600")
     window.configure(bg = "#F8EFD3")
     
-    global key_length
 
     canvas = Canvas(
         window,
@@ -404,6 +407,24 @@ def App(screen=None):
         image=image_message_sign
     )
 
+    def select_message_sign_file():
+        global is_sign_file, message_sign_file_path
+        message_sign_file_path = filedialog.askopenfilename(initialdir = Path(__file__),)
+        ext = message_sign_file_path.split(".")[-1]
+        content = message_sign_file_path
+        # jika message yang diload adalah file text, maka tampilkan
+        # pesan tersebut di layar
+        if ext == "txt":
+            is_sign_file = False
+            with open(message_sign_file_path, "r") as file:
+                content = file.read()
+        # jika bukan, maka yang ditampilkan adalah path ke file tersebut
+        # dan pathnya akan 
+        else:
+            is_sign_file = True
+        input_message_sign.delete("1.0", tk.END)
+        input_message_sign.insert("1.0", content)
+
     # Choose file message - sign button
     button_choose_file_message_sign = PhotoImage(
         file=relative_to_assets("choose_file.png"))
@@ -411,7 +432,7 @@ def App(screen=None):
         image=button_choose_file_message_sign,
         borderwidth=0,
         highlightthickness=0,
-        command=lambda: print("button_choose_file_message_sign clicked"),
+        command=select_message_sign_file,
         relief="flat"
     )
     choose_file_message_sign.place(
@@ -565,13 +586,66 @@ def App(screen=None):
         y = 481.0
     )
 
+    def sign():
+        # periksa isi message
+        msg_sign_teks = input_message_sign.get('1.0', 'end')
+        if msg_sign_teks == "\n":
+            tk.messagebox.showwarning(title=gui_title, message="Masukkan message yang akan disign")
+            return
+        
+        # periksi isi private key dan hilangkan "\n" di belakang
+        private_key = input_private_key.get('1.0', 'end').replace("\n", "")
+        if private_key == '':
+            tk.messagebox.showwarning(title=gui_title, message="Masukkan key terlebih dahulu")
+            return
+        
+        # periksa lokasi sign
+        sign_type = var_sign.get()
+        if sign_type == 0:
+            tk.messagebox.showwarning(title=gui_title, message="Pilih lokasi sign terlebih dahulu")
+            return
+
+        # case kalau dia sudah pilih file, lalu dia malah mengubah isi konten message
+        # kalau dia mengedit pesan setelah memilih file, asumsinya dia akan menandatangani pesan bukan file tersebut
+        if is_sign_file and msg_sign_teks.replace("\n", "") != message_sign_file_path:
+            is_sign_file = False
+
+        # periksa jika dia memilih jenis file tapi embedded
+        if is_sign_file and sign_type == 2:
+            tk.messagebox.showwarning(title=gui_title, message="Tidak bisa embedded tanda tangan selain file teks")
+            return
+        
+        # ekstrak nilai d dan n dari private key, gunakan ini
+        # untuk melakukan enkripsi hasil hash message
+        d = int(private_key.split(",")[0])
+        n = int(private_key.split(",")[1])
+
+
+        # jika yang disign adalah file
+        if is_sign_file:
+            pass # implementasikan
+        # yang disign adalah pesan
+        else:
+            pass # implementasikan
+
+        # seperated file
+        if sign_type == 1:
+            pass # implementasikan
+        # embedded with message
+        else:
+            pass # implementasikan
+
+        # save pesan yang sudah disign dan seperated file jika ada
+        # periksa fungsi save_key() untuk melihat contoh save file
+        
+
     button_sign = PhotoImage(
         file=relative_to_assets("button_sign.png"))
     sign = Button(
         image=button_sign,
         borderwidth=0,
         highlightthickness=0,
-        command=lambda: print("button_sign clicked"),
+        command=sign,
         relief="flat"
     )
     sign.place(
@@ -610,6 +684,24 @@ def App(screen=None):
         image=image_message_verify
     )
 
+    def select_message_verify_file():
+        global is_verify_file, message_verify_file_path
+        message_verify_file_path = filedialog.askopenfilename(initialdir = Path(__file__),)
+        ext = message_verify_file_path.split(".")[-1]
+        content = message_verify_file_path
+        # jika message yang diload adalah file text, maka tampilkan
+        # pesan tersebut di layar
+        if ext == "txt":
+            is_verify_file = False
+            with open(message_verify_file_path, "r") as file:
+                content = file.read()
+        # jika bukan, maka yang ditampilkan adalah path ke file tersebut
+        # dan pathnya akan 
+        else:
+            is_verify_file = True
+        input_message_verify.delete("1.0", tk.END)
+        input_message_verify.insert("1.0", content)
+
     # choose file message verify
     button_choose_file_message_verify = PhotoImage(
         file=relative_to_assets("choose_file.png"))
@@ -617,7 +709,7 @@ def App(screen=None):
         image=button_choose_file_message_verify,
         borderwidth=0,
         highlightthickness=0,
-        command=lambda: print("button_choose_file_message_verify clicked"),
+        command=select_message_verify_file,
         relief="flat"
     )
     choose_file_message_verify.place(
@@ -787,13 +879,67 @@ def App(screen=None):
         y = 481.0
     )
 
+    def verify():
+        # periksa isi message
+        msg_verify_teks = input_message_verify.get('1.0', 'end')
+        if msg_verify_teks == "\n":
+            tk.messagebox.showwarning(title=gui_title, message="Masukkan message yang akan diverify")
+            return
+        
+        # periksi isi public key dan hilangkan "\n" di belakang
+        public_key = input_public_key.get('1.0', 'end').replace("\n", "")
+        if public_key == '':
+            tk.messagebox.showwarning(title=gui_title, message="Masukkan key terlebih dahulu")
+            return
+        
+        # periksa lokasi sign
+        verify_type = var_verify.get()
+        if verify_type == 0:
+            tk.messagebox.showwarning(title=gui_title, message="Pilih lokasi verify terlebih dahulu")
+            return
+
+        # case kalau dia sudah pilih file, lalu dia malah mengubah isi konten message
+        # kalau dia mengedit pesan setelah memilih file, asumsinya dia akan menandatangani pesan bukan file tersebut
+        if is_verify_file and msg_verify_teks.replace("\n", "") != message_verify_file_path:
+            is_verify_file = False
+
+        # periksa jika dia memilih jenis file tapi embedded
+        if is_verify_file and verify_type == 2:
+            tk.messagebox.showwarning(title=gui_title, message="Tidak bisa embedded tanda tangan selain file teks")
+            return
+        
+        # periksa jika dia memilih seperated file tapi dia belum memilih path file
+        # implementasikan
+        
+        # ekstrak nilai d dan n dari public key, gunakan ini
+        # untuk melakukan dekripsi tanda tangan
+        e = int(public_key.split(",")[0])
+        n = int(public_key.split(",")[1])
+
+
+        # jika yang diverify adalah file
+        if is_verify_file:
+            pass # implementasikan
+        # yang diverify adalah pesan
+        else:
+            pass # implementasikan
+
+        # seperated file
+        if verify_type == 1:
+            pass # implementasikan
+        # embedded with message
+        else:
+            pass # implementasikan
+
+        # implementasikan semua kasus yang terjadi
+
     button_button_verify = PhotoImage(
         file=relative_to_assets("button_verify.png"))
     button_verify = Button(
         image=button_button_verify,
         borderwidth=0,
         highlightthickness=0,
-        command=lambda: print("button_verify clicked"),
+        command=verify,
         relief="flat"
     )
     button_verify.place(
