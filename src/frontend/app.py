@@ -22,7 +22,6 @@ def App(screen=None):
     global key_length, var_sign, var_verify
     global is_sign_file, message_sign_file_path
     global is_verify_file, message_verify_file_path
-
     if (screen != None):
         screen.destroy()
     window = Tk()
@@ -587,6 +586,7 @@ def App(screen=None):
     )
 
     def sign():
+        global is_sign_file, message_sign_file_path
         # periksa isi message
         msg_sign_teks = input_message_sign.get('1.0', 'end').rstrip()
         if msg_sign_teks == "":
@@ -880,6 +880,7 @@ def App(screen=None):
     )
 
     def verify():
+        global is_verify_file, message_verify_file_path
         # periksa isi message dan hilangkan "\n" di belakang
         msg_verify_teks = input_message_verify.get('1.0', 'end').rstrip()
         if msg_verify_teks == "":
