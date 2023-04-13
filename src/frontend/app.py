@@ -588,13 +588,13 @@ def App(screen=None):
 
     def sign():
         # periksa isi message
-        msg_sign_teks = input_message_sign.get('1.0', 'end')
-        if msg_sign_teks == "\n":
+        msg_sign_teks = input_message_sign.get('1.0', 'end').rstrip()
+        if msg_sign_teks == "":
             tk.messagebox.showwarning(title=gui_title, message="Masukkan message yang akan disign")
             return
         
         # periksi isi private key dan hilangkan "\n" di belakang
-        private_key = input_private_key.get('1.0', 'end').replace("\n", "")
+        private_key = input_private_key.get('1.0', 'end').rstrip()
         if private_key == '':
             tk.messagebox.showwarning(title=gui_title, message="Masukkan key terlebih dahulu")
             return
@@ -607,7 +607,7 @@ def App(screen=None):
 
         # case kalau dia sudah pilih file, lalu dia malah mengubah isi konten message
         # kalau dia mengedit pesan setelah memilih file, asumsinya dia akan menandatangani pesan bukan file tersebut
-        if is_sign_file and msg_sign_teks.replace("\n", "") != message_sign_file_path:
+        if is_sign_file and msg_sign_teks != message_sign_file_path:
             is_sign_file = False
 
         # periksa jika dia memilih jenis file tapi embedded
@@ -621,12 +621,12 @@ def App(screen=None):
         n = int(private_key.split(",")[1])
 
 
-        # jika yang disign adalah file
+       # jika yang disign adalah file
         if is_sign_file:
-            pass # implementasikan
+            pass # implementasikan, manfaatkan file path yang ada di msg_sign_teks
         # yang disign adalah pesan
         else:
-            pass # implementasikan
+            pass # implementasikan, manfaatkan konten pesan yang ada di msg_sign_teks
 
         # seperated file
         if sign_type == 1:
@@ -880,14 +880,14 @@ def App(screen=None):
     )
 
     def verify():
-        # periksa isi message
-        msg_verify_teks = input_message_verify.get('1.0', 'end')
-        if msg_verify_teks == "\n":
+        # periksa isi message dan hilangkan "\n" di belakang
+        msg_verify_teks = input_message_verify.get('1.0', 'end').rstrip()
+        if msg_verify_teks == "":
             tk.messagebox.showwarning(title=gui_title, message="Masukkan message yang akan diverify")
             return
         
         # periksi isi public key dan hilangkan "\n" di belakang
-        public_key = input_public_key.get('1.0', 'end').replace("\n", "")
+        public_key = input_public_key.get('1.0', 'end').rstrip()
         if public_key == '':
             tk.messagebox.showwarning(title=gui_title, message="Masukkan key terlebih dahulu")
             return
@@ -899,8 +899,8 @@ def App(screen=None):
             return
 
         # case kalau dia sudah pilih file, lalu dia malah mengubah isi konten message
-        # kalau dia mengedit pesan setelah memilih file, asumsinya dia akan menandatangani pesan bukan file tersebut
-        if is_verify_file and msg_verify_teks.replace("\n", "") != message_verify_file_path:
+        # kalau dia mengedit pesan setelah memilih file, asumsinya dia akan memeriksa pesan bukan file tersebut
+        if is_verify_file and msg_verify_teks != message_verify_file_path:
             is_verify_file = False
 
         # periksa jika dia memilih jenis file tapi embedded
@@ -908,10 +908,10 @@ def App(screen=None):
             tk.messagebox.showwarning(title=gui_title, message="Tidak bisa embedded tanda tangan selain file teks")
             return
         
-        # periksa jika dia memilih seperated file tapi dia belum memilih path file
+        # periksa jika dia memilih seperated file tapi dia belum memilih file path
         # implementasikan
         
-        # ekstrak nilai d dan n dari public key, gunakan ini
+        # ekstrak nilai e dan n dari public key, gunakan ini
         # untuk melakukan dekripsi tanda tangan
         e = int(public_key.split(",")[0])
         n = int(public_key.split(",")[1])
@@ -919,10 +919,10 @@ def App(screen=None):
 
         # jika yang diverify adalah file
         if is_verify_file:
-            pass # implementasikan
+            pass # implementasikan, manfaatkan file path yang ada di msg_verify_teks
         # yang diverify adalah pesan
         else:
-            pass # implementasikan
+            pass # implementasikan, manfaatkan konten pesan yang ada di msg_verify_teks
 
         # seperated file
         if verify_type == 1:
