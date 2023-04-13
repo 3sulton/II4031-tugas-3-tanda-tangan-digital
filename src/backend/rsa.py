@@ -64,8 +64,12 @@ def signing(ds):
     ''' % ds
 
 class rsa:
-    def __init__(self):
+    def __init__(self) -> None:
         pass
+
+    def get_key(self):
+        self.key_generator()
+        return self.e, self.d, self.n
 
     def generate_e(self):
         length = 1024
@@ -97,6 +101,9 @@ class rsa:
         assert((self.e * self.d) % self.phi == 1 )
         return
 
-
-rsa = rsa()
-rsa.key_generator()
+if __name__ == "__main__":
+    r = rsa()
+    e, d, n = r.get_key()
+    print(e)
+    print(d)
+    print(n)
