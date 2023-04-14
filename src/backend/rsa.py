@@ -65,7 +65,7 @@ def rsa_verify(ds, hash, n, key):
 
 def signing(ds):
     return '''
-    *** Begin of digital signature ***\n
+    *** Begin of digital signature ***
     %s\n
     *** End of digital signature ***
     ''' % ds
