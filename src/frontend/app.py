@@ -641,7 +641,7 @@ def App(screen=None):
             ds_content = ds
         # embedded with message
         else:
-            ds_content = msg_sign_teks + "\n" + ds
+            ds_content = msg_sign_teks + ds
         
 
         # save pesan yang sudah disign dan seperated file jika ada
@@ -864,6 +864,10 @@ def App(screen=None):
         y = 455.0
     )
 
+    def select_digital_sign_file():
+        global digital_sign_file_path
+        digital_sign_file_path = filedialog.askopenfilename(initialdir = Path(__file__),)
+
     # choose separated file
     button_choose_file_separated = PhotoImage(
     file=relative_to_assets("choose_file.png"))
@@ -871,7 +875,7 @@ def App(screen=None):
         image=button_choose_file_separated,
         borderwidth=0,
         highlightthickness=0,
-        command=lambda: print("button_choose_file_separated clicked"),
+        command=select_digital_sign_file,
         relief="flat"
     )
     choose_file_separated.place(
@@ -952,15 +956,23 @@ def App(screen=None):
             # implementasikan, manfaatkan konten pesan yang ada di msg_verify_teks
             content = msg_verify_teks
 
-        h = rsa.hashing(content)
-
         # seperated file
         if verify_type == 1:
-            # implementasikan
-            pass
+            with open(digital_sign_file_path, "r") as file:
+                ds = file.read()
         # embedded with message
         else:
-            pass # implementasikan
+            temp = content.split('*** Begin of digital signature ***')[-1]
+            content = content.split('*** Begin of digital signature ***')[0]
+            ds = temp.split('*** End of digital signature ***')[0]
+
+        hash_content = rsa.hashing(content)
+        # klo valid
+        if (rsa.rsa_verify(ds, hash_content, n, d)):
+            tk.messagebox.showwarning(title=gui_title, message="Tanda-tangan terverifikasi!")
+        # klo tidak valid
+        else:
+            tk.messagebox.showwarning(title=gui_title, message="Tanda-tangan dan konten tidak terverifikasi :(")
 
         # implementasikan semua kasus yang terjadi
 
