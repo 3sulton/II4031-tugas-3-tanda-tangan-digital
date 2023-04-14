@@ -64,11 +64,7 @@ def rsa_verify(ds, hash, n, key):
     return result == hash
 
 def signing(ds):
-    return '''
-    *** Begin of digital signature ***
-    %s\n
-    *** End of digital signature ***
-    ''' % ds
+    return '''*** Begin of digital signature ***%s*** End of digital signature ***''' % ds
 
 class rsa:
     def __init__(self) -> None:
@@ -110,12 +106,4 @@ class rsa:
 if __name__ == "__main__":
     r = rsa()
     e, d, n = r.get_key(512)
-    # print(e)
-    # print(d)
-    # print(n)
-    # nanti input hash nya diubah dulu ke int gede
-    h = hashing("halo kawan")
-    result = rsa_sign(h, n, e)
-    print(result)
-    print(rsa_verify(result, h, n, d))
-    print(signing(result))
+    
