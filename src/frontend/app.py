@@ -633,7 +633,7 @@ def App(screen=None):
 
         #proses signing
         h = rsa.hashing(content)
-        result = rsa.rsa_sign(h, n, e)
+        result = rsa.rsa_sign(h, n, d)
         ds = rsa.signing(result)
 
         # seperated file
@@ -960,6 +960,8 @@ def App(screen=None):
         if verify_type == 1:
             with open(digital_sign_file_path, "r") as file:
                 ds = file.read()
+                temp = ds.split('*** Begin of digital signature ***')[-1]
+                ds = temp.split('*** End of digital signature ***')[0]
         # embedded with message
         else:
             temp = content.split('*** Begin of digital signature ***')[-1]
@@ -968,7 +970,7 @@ def App(screen=None):
 
         hash_content = rsa.hashing(content)
         # klo valid
-        if (rsa.rsa_verify(ds, hash_content, n, d)):
+        if (rsa.rsa_verify(ds, hash_content, n, e)):
             tk.messagebox.showwarning(title=gui_title, message="Tanda-tangan terverifikasi!")
         # klo tidak valid
         else:
