@@ -587,6 +587,7 @@ def App(screen=None):
 
     def sign():
         global is_sign_file, message_sign_file_path
+        is_sign_file = False
         # periksa isi message
         msg_sign_teks = input_message_sign.get('1.0', 'end').rstrip()
         if msg_sign_teks == "":
@@ -623,20 +624,42 @@ def App(screen=None):
 
        # jika yang disign adalah file
         if is_sign_file:
-            pass # implementasikan, manfaatkan file path yang ada di msg_sign_teks
+            with open(message_sign_file_path, "rb") as file:
+                content = file.read()
+                content = content.decode("ISO-8859-1")
         # yang disign adalah pesan
         else:
-            pass # implementasikan, manfaatkan konten pesan yang ada di msg_sign_teks
+            content = msg_sign_teks
+
+        #proses signing
+        h = rsa.hashing(content)
+        result = rsa.rsa_sign(h, n, e)
+        ds = rsa.signing(result)
 
         # seperated file
         if sign_type == 1:
-            pass # implementasikan
+            ds_content = ds
         # embedded with message
         else:
-            pass # implementasikan
+            ds_content = msg_sign_teks + "\n" + ds
+        
 
         # save pesan yang sudah disign dan seperated file jika ada
         # periksa fungsi save_key() untuk melihat contoh save file
+        digital_sign_path = filedialog.asksaveasfilename(
+            defaultextension='.txt',
+            filetypes=[('Custom Files', '*.txt'), ('All Files', '*.*')],
+            title='Save Digital Sign',
+            initialfile='my_digital_sign.txt'
+        )
+
+        if digital_sign_path == "":
+            return
+        
+        with open(digital_sign_path, 'w') as file:
+            file.write(ds_content)
+
+        tk.messagebox.showinfo(title=gui_title, message="Digital Sign berhasil disimpan")
         
 
     button_sign = PhotoImage(
@@ -920,14 +943,21 @@ def App(screen=None):
 
         # jika yang diverify adalah file
         if is_verify_file:
-            pass # implementasikan, manfaatkan file path yang ada di msg_verify_teks
+            # implementasikan, manfaatkan file path yang ada di msg_verify_teks
+            with open(message_verify_file_path, "rb") as file:
+                content = file.read()
+                content = content.decode("ISO-8859-1")
         # yang diverify adalah pesan
         else:
-            pass # implementasikan, manfaatkan konten pesan yang ada di msg_verify_teks
+            # implementasikan, manfaatkan konten pesan yang ada di msg_verify_teks
+            content = msg_verify_teks
+
+        h = rsa.hashing(content)
 
         # seperated file
         if verify_type == 1:
-            pass # implementasikan
+            # implementasikan
+            pass
         # embedded with message
         else:
             pass # implementasikan
