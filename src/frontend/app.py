@@ -413,6 +413,7 @@ def App(screen=None):
         content = message_sign_file_path
         # jika message yang diload adalah file text, maka tampilkan
         # pesan tersebut di layar
+        
         if ext == "txt":
             is_sign_file = False
             with open(message_sign_file_path, "r") as file:
@@ -587,7 +588,6 @@ def App(screen=None):
 
     def sign():
         global is_sign_file, message_sign_file_path
-        is_sign_file = False
         # periksa isi message
         msg_sign_teks = input_message_sign.get('1.0', 'end').rstrip()
         if msg_sign_teks == "":
