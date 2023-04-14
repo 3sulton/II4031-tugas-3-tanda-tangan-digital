@@ -21,6 +21,8 @@ def App(screen=None):
     global window, gui_title
     global key_length, var_sign, var_verify
     global is_sign_file, message_sign_file_path
+    is_sign_file = False
+    message_sign_file_path =""
     global is_verify_file, message_verify_file_path
     if (screen != None):
         screen.destroy()
@@ -588,6 +590,7 @@ def App(screen=None):
 
     def sign():
         global is_sign_file, message_sign_file_path
+        
         # periksa isi message
         msg_sign_teks = input_message_sign.get('1.0', 'end').rstrip()
         if msg_sign_teks == "":
